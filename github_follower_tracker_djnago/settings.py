@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,6 +51,83 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'main_formatter': {
+            'format': '{asctime} - {levelname} - {module} - {message} - '
+                      '{process} - {thread} - {pathname}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+            'level': 'INFO',
+        },
+        'file_warning': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/djangoProject_warning.logs',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'main_formatter',
+            'level': 'WARNING',
+        },
+        'file_info': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/djangoProject_info.logs',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'main_formatter',
+            'level': 'INFO',
+        },
+        'file_error': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/djangoProject_error.logs',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'main_formatter',
+            'level': 'ERROR',
+        },
+        'file_critical': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/djangoProject_critical.logs',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'main_formatter',
+            'level': 'CRITICAL',
+        },
+        # TODO delete
+        'file_debug': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/djangoProject_debug.logs',
+            'maxBytes': 1024*1024*50,  # 50 MB
+            'backupCount': 5,
+            'formatter': 'main_formatter',
+            'level': 'DEBUG',
+        },
+
+    },
+    'loggers': {
+        'main': {
+            'handlers': ['console', 'file_warning', 'file_info',
+                         'file_error', 'file_critical', 'file_debug'],
+            'level': 'DEBUG',
+        },
+        'django': {
+            'handlers': ['console', 'file_warning', 'file_info'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file_warning'],
+        'level': 'WARNING',
+    },
+}
+
 ROOT_URLCONF = 'github_follower_tracker_djnago.urls'
 
 TEMPLATES = [
@@ -77,8 +155,12 @@ WSGI_APPLICATION = 'github_follower_tracker_djnago.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': config('DATABASE_HOST'),
+        'PORT': config('DATABASE_PORT'),
     }
 }
 
@@ -118,6 +200,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_ROOT = BASE_DIR / "uploads"
+
+MEDIA_URL = "/files/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -1,0 +1,13 @@
+asgiref==3.8.1
+coverage==7.6.1
+Django==5.1
+flake8==7.1.1
+flake8-isort==6.1.1
+isort==5.13.2
+mccabe==0.7.0
+psycopg2-binary==2.9.9
+pycodestyle==2.12.1
+pyflakes==3.2.0
+python-decouple==3.8
+sqlparse==0.5.1
+tzdata==2024.1
